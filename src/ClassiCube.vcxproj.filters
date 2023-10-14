@@ -679,7 +679,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\misc\windows\GSCicon.rc">
+    <ResourceCompile Include="..\misc\windows\StellaIcon.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

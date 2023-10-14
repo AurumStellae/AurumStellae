@@ -519,24 +519,8 @@ void Launcher_DrawBackgroundAll(struct Context2D* ctx) {
 cc_bool Launcher_BitmappedText(void) {
 	return (useBitmappedFont || Launcher_Theme.ClassicBackground) && hasBitmappedFont;
 }
-/*void Launcher_DrawTitle(struct FontDesc* font, const char* text, struct Context2D* ctx) {
-	cc_string title = String_FromReadonly(text);
-	struct DrawTextArgs args;
-	int x;
-
-	// Skip dragging logo when very small window to save space 
-	if (WindowInfo.Height < 300) return;
-
-	DrawTextArgs_Make(&args, &title, font, false);
-	x = ctx->width / 2 - Drawer2D_TextWidth(&args) / 2;
-
-	Drawer2D.Colors['f'] = BITMAPCOLOR_BLACK;
-	Context2D_DrawText(ctx, &args, x + Display_ScaleX(4), Display_ScaleY(4));
-	Drawer2D.Colors['f'] = BITMAPCOLOR_WHITE;
-	Context2D_DrawText(ctx, &args, x,                     0);
-}*/
 void Launcher_DrawTitle(struct FontDesc* font, const char* text, struct Context2D* ctx) {
-	cc_string title = String_FromReadonly("&6G&eo&6l&ed&6e&en&6S&ep&6a&er&6k&es &6C&eo&6r&ee");
+	cc_string title = String_FromReadonly("&6A&eu&fr&6u&em &fS&6t&ee&fl&6l&ea &fC&6o&er&fe");
 	struct DrawTextArgs args;
 	int x;
 
@@ -547,9 +531,9 @@ void Launcher_DrawTitle(struct FontDesc* font, const char* text, struct Context2
 	x = ctx->width / 2 - Drawer2D_TextWidth(&args) / 2;
 
 	Drawer2D.Colors['f'] = BITMAPCOLOR_BLACK;
-	Context2D_DrawText(ctx, &args, x + Display_ScaleX(4), Display_ScaleY(4));
+	Context2D_DrawText(ctx, &args, x, 0);
 	Drawer2D.Colors['f'] = BITMAPCOLOR_WHITE;
-	//Context2D_DrawText(ctx, &args, x,                     0);
+	Context2D_DrawText(ctx, &args, x, 0);
 }
 void Launcher_MakeTitleFont(struct FontDesc* font) {
 	Drawer2D.BitmappedText = Launcher_BitmappedText();

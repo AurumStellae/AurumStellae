@@ -7,7 +7,7 @@ Copyright 2014-2023 ClassiCube | Licensed under BSD-3
 
 #define GAME_MAX_CMDARGS 5
 #define CC_APP_VER "1.3.6"
-#define GS_APP_VER "1.0.6"
+#define STELLA_APP_VER "0.1"
 #define GAME_API_VER 1
 
 #if defined CC_BUILD_OG
@@ -15,8 +15,8 @@ Copyright 2014-2023 ClassiCube | Licensed under BSD-3
 #define GAME_APP_TITLE "ClassiCube 1.3.6"
 #else
 #define CC_APP_NAME  "ClassiCube 1.3.6"
-#define GAME_APP_NAME "&eGolden&6Sparks &eCore &61.0.6"
-#define GAME_APP_TITLE "GoldenSparks Core 1.0.6"
+#define GAME_APP_NAME "&eAurum &6Stella &fCore &e0&6.&f1&e"
+#define GAME_APP_TITLE "Aurum Stella Core 0.1"
 #endif
 
 /* Max number of characters strings can have. */
@@ -76,5 +76,7 @@ enum SKIN_TYPE { SKIN_64x32, SKIN_64x64, SKIN_64x64_SLIM, SKIN_INVALID = 0xF0 };
 /* Webpage where users can register for a new account */
 #define REGISTERNEW_URL "https://www.classicube.net/acc/register/"
 #define CC_CLIENT_URL "https://www.classicube.net/download/"
+#define GSC_CLIENT_URL "https://github.com/GoldenSparks/GoldenSparks-Core/tree/master/src/Uploads"
+
 #define DEFAULT_USERNAME "Singleplayer"
 #endif

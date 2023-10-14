@@ -558,7 +558,7 @@
     <ClCompile Include="_type1.c" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\misc\windows\GSCicon.rc" />
+    <ResourceCompile Include="..\misc\windows\StellaIcon.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
