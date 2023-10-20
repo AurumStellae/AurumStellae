@@ -520,7 +520,7 @@ cc_bool Launcher_BitmappedText(void) {
 	return (useBitmappedFont || Launcher_Theme.ClassicBackground) && hasBitmappedFont;
 }
 void Launcher_DrawTitle(struct FontDesc* font, const char* text, struct Context2D* ctx) {
-	cc_string title = String_FromReadonly("&6A&eu&fr&6u&em &fS&6t&ee&fl&6l&ea &fC&6o&er&fe");
+	cc_string title = String_FromReadonly("&6A&eu&fr&6u&em &fS&6t&ee&fl&6l&ea&fe &6C&eo&fr&6e");
 	struct DrawTextArgs args;
 	int x;
 

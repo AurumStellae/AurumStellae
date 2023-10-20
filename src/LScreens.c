@@ -1406,7 +1406,7 @@ static void SettingsScreen_DPIScaling(struct LCheckbox* w) {
 #if defined CC_BUILD_WIN
 	DisplayInfo.DPIScaling = w->value;
 	Options_SetBool(OPT_DPI_SCALING, w->value);
-	Window_ShowDialog("Restart required", "You must restart Aurum Stella Core before display scaling takes effect");
+	Window_ShowDialog("Restart required", "You must restart Aurum Stellae Core before display scaling takes effect");
 #else
 	Window_ShowDialog("Restart required", "Display scaling is currently only supported on Windows");
 #endif

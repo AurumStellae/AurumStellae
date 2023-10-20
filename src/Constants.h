@@ -7,7 +7,7 @@ Copyright 2014-2023 ClassiCube | Licensed under BSD-3
 
 #define GAME_MAX_CMDARGS 5
 #define CC_APP_VER "1.3.6"
-#define STELLA_APP_VER "0.1"
+#define STELLA_APP_VER "0.2"
 #define GAME_API_VER 1
 
 #if defined CC_BUILD_OG
@@ -15,8 +15,8 @@ Copyright 2014-2023 ClassiCube | Licensed under BSD-3
 #define GAME_APP_TITLE "ClassiCube 1.3.6"
 #else
 #define CC_APP_NAME  "ClassiCube 1.3.6"
-#define GAME_APP_NAME "&eAurum &6Stella &fCore &e0&6.&f1&e"
-#define GAME_APP_TITLE "Aurum Stella Core 0.1"
+#define GAME_APP_NAME "&eAurum &6Stellae &fCore &e0&6.&f2&e"
+#define GAME_APP_TITLE "Aurum Stellae Core 0.2"
 #endif
 
 /* Max number of characters strings can have. */
