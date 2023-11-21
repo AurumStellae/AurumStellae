@@ -7,8 +7,6 @@
 #include <vitasdk.h>
 
 // TODO track last frame used on
-/* Current format and size of vertices */
-static int gfx_stride, gfx_format = -1;
 static cc_bool gfx_depthOnly;
 static cc_bool gfx_alphaTesting, gfx_alphaBlending;
 static int frontBufferIndex, backBufferIndex;
@@ -661,7 +659,7 @@ static void GPUTextures_DeleteUnreferenced(void) {
 /*########################################################################################################################*
 *---------------------------------------------------------Textures--------------------------------------------------------*
 *#########################################################################################################################*/
-GfxResourceID Gfx_CreateTexture(struct Bitmap* bmp, cc_uint8 flags, cc_bool mipmaps) {
+static GfxResourceID Gfx_AllocTexture(struct Bitmap* bmp, cc_uint8 flags, cc_bool mipmaps) {
 	int size = bmp->width * bmp->height * 4;
 	struct GPUTexture* tex = GPUTexture_Alloc(size);
 	Mem_Copy(tex->data, bmp->scan0, size);
@@ -891,7 +889,7 @@ void Gfx_DeleteIb(GfxResourceID* ib) { GPUBuffer_Unref(ib); }
 /*########################################################################################################################*
 *-------------------------------------------------------Vertex buffers----------------------------------------------------*
 *#########################################################################################################################*/
-GfxResourceID Gfx_CreateVb(VertexFormat fmt, int count) {
+static GfxResourceID Gfx_AllocStaticVb(VertexFormat fmt, int count) {
 	return GPUBuffer_Alloc(count * strideSizes[fmt]);
 }
 
@@ -911,9 +909,11 @@ void* Gfx_LockVb(GfxResourceID vb, VertexFormat fmt, int count) {
 void Gfx_UnlockVb(GfxResourceID vb) { Gfx_BindVb(vb); }
 
 
-GfxResourceID Gfx_CreateDynamicVb(VertexFormat fmt, int maxVertices) {
+static GfxResourceID Gfx_AllocDynamicVb(VertexFormat fmt, int maxVertices) {
 	return GPUBuffer_Alloc(maxVertices * strideSizes[fmt]);
 }
+
+void Gfx_BindDynamicVb(GfxResourceID vb) { Gfx_BindVb(vb); }
 
 void* Gfx_LockDynamicVb(GfxResourceID vb, VertexFormat fmt, int count) {
 	struct GPUBuffer* buffer = (struct GPUBuffer*)vb;
@@ -922,11 +922,7 @@ void* Gfx_LockDynamicVb(GfxResourceID vb, VertexFormat fmt, int count) {
 
 void Gfx_UnlockDynamicVb(GfxResourceID vb) { Gfx_BindVb(vb); }
 
-void Gfx_SetDynamicVbData(GfxResourceID vb, void* vertices, int vCount) {
-	struct GPUBuffer* buffer = (struct GPUBuffer*)vb;
-	Mem_Copy(buffer->data, vertices, vCount * gfx_stride);
-	Gfx_BindVb(vb);
-}
+void Gfx_DeleteDynamicVb(GfxResourceID* vb) { Gfx_DeleteVb(vb); }
 
 
 /*########################################################################################################################*

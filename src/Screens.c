@@ -120,11 +120,12 @@ static void HUDScreen_BuildPosition(struct HUDScreen* s, struct VertexTextured* 
 
 	/* Make "Position: " prefix */
 	tex = atlas->tex; 
-	tex.X = 2; tex.Width = atlas->offset;
+	tex.X     = 2 + DisplayInfo.ContentOffset;
+	tex.Width = atlas->offset;
 	Gfx_Make2DQuad(&tex, PACKEDCOL_WHITE, &cur);
 
 	IVec3_Floor(&pos, &LocalPlayer_Instance.Base.Position);
-	atlas->curX = atlas->offset + 2;
+	atlas->curX = tex.X + tex.Width;
 
 	/* Make (X, Y, Z) suffix */
 	TextAtlas_Add(atlas,       13, &cur);
@@ -212,10 +213,12 @@ static void HUDScreen_Layout(void* screen) {
 	struct TextWidget* line2 = &s->line2;
 	int posY;
 
-	Widget_SetLocation(line1, ANCHOR_MIN, ANCHOR_MIN, 2, 2);
+	Widget_SetLocation(line1, ANCHOR_MIN, ANCHOR_MIN, 
+						2 + DisplayInfo.ContentOffset, 2 + DisplayInfo.ContentOffset);
 	posY = line1->y + line1->height;
 	s->posAtlas.tex.Y = posY;
-	Widget_SetLocation(line2, ANCHOR_MIN, ANCHOR_MIN, 2, 0);
+	Widget_SetLocation(line2, ANCHOR_MIN, ANCHOR_MIN, 
+						2 + DisplayInfo.ContentOffset, 0);
 
 	if (Game_ClassicMode) {
 		/* Swap around so 0.30 version is at top */
@@ -1900,23 +1903,7 @@ static void GeneratingScreen_AtlasChanged(void* obj) {
 }
 
 static void GeneratingScreen_Init(void* screen) {
-	void* thread;
-	Gen_Done = false;
 	LoadingScreen_Init(screen);
-
-	Gen_Blocks = (BlockRaw*)Mem_TryAlloc(World.Volume, 1);
-	if (!Gen_Blocks) {
-		Window_ShowDialog("Out of memory", "Not enough free memory to generate a map that large.\nTry a smaller size.");
-		Gen_Done = true;
-	} else if (Gen_Vanilla) {
-		thread = Thread_Create(NotchyGen_Generate);
-		Thread_Start2(thread,  NotchyGen_Generate);
-		Thread_Detach(thread);
-	} else {
-		thread = Thread_Create(FlatgrassGen_Generate);
-		Thread_Start2(thread,  FlatgrassGen_Generate);
-		Thread_Detach(thread);
-	}
 	Event_Register_(&TextureEvents.AtlasChanged,   NULL, GeneratingScreen_AtlasChanged);
 }
 static void GeneratingScreen_Free(void* screen) {
@@ -1925,7 +1912,6 @@ static void GeneratingScreen_Free(void* screen) {
 }
 
 static void GeneratingScreen_EndGeneration(void) {
-	Gen_Done   = false;
 	World_SetNewMap(Gen_Blocks, World.Width, World.Height, World.Length);
 	if (!Gen_Blocks) { Chat_AddRaw("&cFailed to generate the map."); return; }
 

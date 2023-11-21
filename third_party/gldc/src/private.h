@@ -13,8 +13,7 @@
 #include "aligned_vector.h"
 #include "named_array.h"
 
-/* This figure is derived from the needs of Quake 1 */
-#define MAX_TEXTURE_COUNT 1088
+#define MAX_TEXTURE_COUNT 768
 
 
 extern void* memcpy4 (void *dest, const void *src, size_t count);
@@ -69,15 +68,14 @@ typedef struct {
     GLushort height;
     //24
     GLushort  mipmap;  /* Bitmask of supplied mipmap levels */
-	// 26
-	GLushort _pad0;
+    // 26
+    GLushort _pad0;
     // 28
     GLubyte mipmap_bias;
     GLubyte  env;
+    // 30
     GLubyte _pad1;
     GLubyte _pad2;
-    //32
-    GLubyte padding[32];  // Pad to 64-bytes
 } __attribute__((aligned(32))) TextureObject;
 
 
@@ -110,28 +108,6 @@ GL_FORCE_INLINE void memcpy_vertex(Vertex *dest, const Vertex *src) {
 #endif
 }
 
-#define swapVertex(a, b)   \
-do {                 \
-    Vertex __attribute__((aligned(32))) c;   \
-    memcpy_vertex(&c, a); \
-    memcpy_vertex(a, b); \
-    memcpy_vertex(b, &c); \
-} while(0)
-
-/* Generating PVR vertices from the user-submitted data gets complicated, particularly
- * when a realloc could invalidate pointers. This structure holds all the information
- * we need on the target vertex array to allow passing around to the various stages (e.g. generate/clip etc.)
- */
-typedef struct __attribute__((aligned(32))) {
-    PolyList* output;
-    uint32_t header_offset; // The offset of the header in the output list
-    uint32_t start_offset; // The offset into the output list
-    uint32_t count; // The number of vertices in this output
-} SubmissionTarget;
-
-Vertex* _glSubmissionTargetStart(SubmissionTarget* target);
-Vertex* _glSubmissionTargetEnd(SubmissionTarget* target);
-
 typedef enum {
     CLIP_RESULT_ALL_IN_FRONT,
     CLIP_RESULT_ALL_BEHIND,
@@ -139,9 +115,6 @@ typedef enum {
     CLIP_RESULT_FRONT_TO_BACK,
     CLIP_RESULT_BACK_TO_FRONT
 } ClipResult;
-
-
-struct SubmissionTarget;
 
 void _glInitAttributePointers();
 void _glInitContext();
@@ -164,13 +137,10 @@ extern GLboolean CULLING_ENABLED;
 
 extern GLboolean FOG_ENABLED;
 extern GLboolean ALPHA_TEST_ENABLED;
+extern GLboolean BLEND_ENABLED;
 
 extern GLboolean SCISSOR_TEST_ENABLED;
 extern GLenum SHADE_MODEL;
-
-extern GLboolean BLEND_ENABLED;
-extern GLenum BLEND_SRC_FACTOR;
-extern GLenum BLEND_DST_FACTOR;
 
 
 extern PolyList OP_LIST;
@@ -185,33 +155,6 @@ GL_FORCE_INLINE PolyList* _glActivePolyList() {
     } else {
         return &OP_LIST;
     }
-}
-
-extern GLenum LAST_ERROR;
-extern char ERROR_FUNCTION[64];
-
-GL_FORCE_INLINE const char* _glErrorEnumAsString(GLenum error) {
-    switch(error) {
-        case GL_INVALID_ENUM: return "GL_INVALID_ENUM";
-        case GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
-        case GL_INVALID_OPERATION: return "GL_INVALID_OPERATION";
-        case GL_INVALID_VALUE: return "GL_INVALID_VALUE";
-        default:
-            return "GL_UNKNOWN_ERROR";
-    }
-}
-
-GL_FORCE_INLINE void _glKosThrowError(GLenum error, const char *function) {
-    if(LAST_ERROR == GL_NO_ERROR) {
-        LAST_ERROR = error;
-        sprintf(ERROR_FUNCTION, "%s\n", function);
-        fprintf(stderr, "GL ERROR: %s when calling %s\n", _glErrorEnumAsString(LAST_ERROR), ERROR_FUNCTION);
-    }
-}
-
-GL_FORCE_INLINE void _glKosResetError() {
-    LAST_ERROR = GL_NO_ERROR;
-    sprintf(ERROR_FUNCTION, "\n");
 }
 
 unsigned char _glIsClippingEnabled();

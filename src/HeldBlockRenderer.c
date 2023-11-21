@@ -26,7 +26,8 @@ static void HeldBlockRenderer_RenderModel(void) {
 
 	Gfx_SetFaceCulling(true);
 	Gfx_SetDepthTest(false);
-	
+	/* TODO: Need to properly reallocate per model VB here */
+
 	if (Blocks.Draw[held_block] == DRAW_GAS) {
 		model = LocalPlayer_Instance.Base.Model;
 		Vec3_Set(held_entity.ModelScale, 1.0f,1.0f,1.0f);
@@ -225,6 +226,11 @@ void HeldBlockRenderer_Render(double delta) {
 	Gfx_LoadMatrix(MATRIX_PROJECTION, &Gfx.Projection);
 }
 
+
+static void OnContextLost(void* obj) {
+	Gfx_DeleteDynamicVb(&held_entity.ModelVB);
+}
+
 static const struct EntityVTABLE heldEntity_VTABLE = {
 	NULL, NULL, NULL, HeldBlockRenderer_GetCol,
 	NULL, NULL
@@ -240,6 +246,7 @@ static void OnInit(void) {
 	Event_Register_(&GfxEvents.ProjectionChanged, NULL, OnProjectionChanged);
 	Event_Register_(&UserEvents.HeldBlockChanged, NULL, DoSwitchBlockAnim);
 	Event_Register_(&UserEvents.BlockChanged,     NULL, OnBlockChanged);
+	Event_Register_(&GfxEvents.ContextLost,       NULL, OnContextLost);
 }
 
 struct IGameComponent HeldBlockRenderer_Component = {

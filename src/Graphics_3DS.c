@@ -21,9 +21,6 @@ extern const u32 offset_shbin_size;
 	(GX_TRANSFER_FLIP_VERT(0) | GX_TRANSFER_OUT_TILED(0) | GX_TRANSFER_RAW_COPY(0) | \
 	GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGBA8) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB8) | \
 	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
-
-// Current format and size of vertices
-static int gfx_stride, gfx_format = -1;
 	
 	
 /*########################################################################################################################*
@@ -225,10 +222,11 @@ static void ToMortonTexture(C3D_Tex* tex, int originX, int originY,
 			dst[(mortonX | mortonY) + (tileX * 8) + (tileY * tex->width)] = pixel;
 		}
 	}
+	// TODO flush data cache GSPGPU_FlushDataCache
 }
 
 
-GfxResourceID Gfx_CreateTexture(struct Bitmap* bmp, cc_uint8 flags, cc_bool mipmaps) {
+static GfxResourceID Gfx_AllocTexture(struct Bitmap* bmp, cc_uint8 flags, cc_bool mipmaps) {
 	C3D_Tex* tex = Mem_Alloc(1, sizeof(C3D_Tex), "GPU texture desc");
 	bool success = C3D_TexInit(tex, bmp->width, bmp->height, GPU_RGBA8);
 	//if (!success) Logger_Abort("Failed to create 3DS texture");
@@ -379,12 +377,9 @@ static cc_uint8* gfx_vertices;
 static cc_uint16* gfx_indices;
 
 static void* AllocBuffer(int count, int elemSize) {
-	void* ptr = linearAlloc(count * elemSize);
+	return linearAlloc(count * elemSize);
 	//cc_uintptr addr = ptr;
 	//Platform_Log3("BUFFER CREATE: %i X %i = %x", &count, &elemSize, &addr);
-	
-	if (!ptr) Logger_Abort("Failed to allocate memory for buffer");
-	return ptr;
 }
 
 static void FreeBuffer(GfxResourceID* buffer) {
@@ -396,6 +391,8 @@ static void FreeBuffer(GfxResourceID* buffer) {
 
 GfxResourceID Gfx_CreateIb2(int count, Gfx_FillIBFunc fillFunc, void* obj) {
 	void* ib = AllocBuffer(count, sizeof(cc_uint16));
+	if (!ib) Logger_Abort("Failed to allocate memory for index buffer");
+
 	fillFunc(ib, count, obj);
 	return ib;
 }
@@ -405,12 +402,13 @@ void Gfx_BindIb(GfxResourceID ib)    { gfx_indices = ib; }
 void Gfx_DeleteIb(GfxResourceID* ib) { FreeBuffer(ib); }
 
 
-GfxResourceID Gfx_CreateVb(VertexFormat fmt, int count) {
+static GfxResourceID Gfx_AllocStaticVb(VertexFormat fmt, int count) {
 	return AllocBuffer(count, strideSizes[fmt]);
 }
 
 void Gfx_BindVb(GfxResourceID vb) { 
-	gfx_vertices = vb; // https://github.com/devkitPro/citro3d/issues/47
+	gfx_vertices = vb; 
+	// https://github.com/devkitPro/citro3d/issues/47
 	// "Fyi the permutation specifies the order in which the attributes are stored in the buffer, LSB first. So 0x210 indicates attributes 0, 1 & 2."
 	C3D_BufInfo* bufInfo = C3D_GetBufInfo();
   	BufInfo_Init(bufInfo);
@@ -431,9 +429,11 @@ void* Gfx_LockVb(GfxResourceID vb, VertexFormat fmt, int count) {
 void Gfx_UnlockVb(GfxResourceID vb) { gfx_vertices = vb; }
 
 
-GfxResourceID Gfx_CreateDynamicVb(VertexFormat fmt, int maxVertices)  {
+static GfxResourceID Gfx_AllocDynamicVb(VertexFormat fmt, int maxVertices) {
 	return AllocBuffer(maxVertices, strideSizes[fmt]);
 }
+
+void Gfx_BindDynamicVb(GfxResourceID vb) { Gfx_BindVb(vb); }
 
 void* Gfx_LockDynamicVb(GfxResourceID vb, VertexFormat fmt, int count) { 
 	return vb; 
@@ -441,10 +441,7 @@ void* Gfx_LockDynamicVb(GfxResourceID vb, VertexFormat fmt, int count) {
 
 void Gfx_UnlockDynamicVb(GfxResourceID vb) { gfx_vertices = vb; }
 
-void Gfx_SetDynamicVbData(GfxResourceID vb, void* vertices, int vCount) {
-	gfx_vertices = vb;
-	Mem_Copy(vb, vertices, vCount * gfx_stride);
-}
+void Gfx_DeleteDynamicVb(GfxResourceID* vb) { Gfx_DeleteVb(vb); }
 
 
 /*########################################################################################################################*

@@ -7,16 +7,22 @@ Copyright 2014-2023 ClassiCube | Licensed under BSD-3
 
 #define GAME_MAX_CMDARGS 5
 #define CC_APP_VER "1.3.6"
-#define STELLA_APP_VER "0.2"
+#define STELLA_APP_VER "0.6"
 #define GAME_API_VER 1
 
+#if defined CC_BUILD_WEB
+#define GAME_APP_ALT   "ClassiCube 1.3.6 web mobile"
+#define GAME_APP_NAME  "ClassiCube 1.3.6 web"
+#define GAME_APP_TITLE "ClassiCube"
+#else
 #if defined CC_BUILD_OG
 #define GAME_APP_NAME  "ClassiCube 1.3.6"
 #define GAME_APP_TITLE "ClassiCube 1.3.6"
 #else
 #define CC_APP_NAME  "ClassiCube 1.3.6"
-#define GAME_APP_NAME "&eAurum &6Stellae &fCore &e0&6.&f2&e"
-#define GAME_APP_TITLE "Aurum Stellae Core 0.2"
+#define GAME_APP_NAME "&eAurum &6Stellae &fCore &e0&6.&f6&e"
+#define GAME_APP_TITLE "Aurum Stellae Core 0.6"
+#endif
 #endif
 
 /* Max number of characters strings can have. */
@@ -68,15 +74,15 @@ enum SKIN_TYPE { SKIN_64x32, SKIN_64x64, SKIN_64x64_SLIM, SKIN_INVALID = 0xF0 };
 #define Int32_MinValue  ((cc_int32)-2147483647L - (cc_int32)1L)
 #define Int32_MaxValue  ((cc_int32)2147483647L)
 
-/* Skins were moved to use ClassiCube's content delivery network, so link directly to avoid a pointless redirect */
+/* Skins were moved to use ClassiCube's content delivery network,
+so link directly to avoid a pointless redirect */
 #define SKINS_SERVER    "http://cdn.classicube.net/skin"
 #define UPDATES_SERVER  "http://cs.classicube.net/client"
 #define SERVICES_SERVER "https://www.classicube.net/api"
 #define RESOURCE_SERVER "http://static.classicube.net"
 /* Webpage where users can register for a new account */
 #define REGISTERNEW_URL "https://www.classicube.net/acc/register/"
-#define CC_CLIENT_URL "https://www.classicube.net/download/"
-#define GSC_CLIENT_URL "https://github.com/GoldenSparks/GoldenSparks-Core/tree/master/src/Uploads"
-
+// Client download page
+#define CLIENT_URL "https://github.com/AurumStellae/AurumStellae"
 #define DEFAULT_USERNAME "Singleplayer"
 #endif

@@ -38,7 +38,7 @@ static void CloseActiveScreen(void) {
 	Window_CloseKeyboard();
 	if (!Launcher_Active) return;
 	
-	Launcher_Active->Free(Launcher_Active);
+	Launcher_Active->Deactivated(Launcher_Active);
 	LBackend_CloseScreen(Launcher_Active);
 	Launcher_Active = NULL;
 }
@@ -46,10 +46,12 @@ static void CloseActiveScreen(void) {
 void Launcher_SetScreen(struct LScreen* screen) {
 	CloseActiveScreen();
 	Launcher_Active = screen;
-	if (!screen->numWidgets) screen->Init(screen);
 
-	screen->Show(screen);
+	screen->Activated(screen);
 	screen->Layout(screen);
+
+	if (!screen->everShown) screen->LoadState(screen);
+	screen->everShown = true;
 
 	LBackend_SetScreen(screen);
 	LBackend_Redraw();
@@ -315,20 +317,18 @@ const struct LauncherTheme Launcher_ClassicTheme = {
 	BitmapColor_RGB(111, 111, 111), /* button foreground */
 	BitmapColor_RGB(168, 168, 168), /* button highlight */
 };
-const struct LauncherTheme Launcher_NordicTheme = {
+const struct LauncherTheme Launcher_GoldTheme = {
 	false,
-	BitmapColor_RGB( 46,  52,  64), /* background */
-	BitmapColor_RGB( 59,  66,  82), /* button border */
-	BitmapColor_RGB( 66,  74,  90), /* active button */
-	BitmapColor_RGB( 59,  66,  82), /* button foreground */
-	BitmapColor_RGB( 76,  86, 106), /* button highlight */
+	BitmapColor_RGB(64, 60, 10), /* background */
+	BitmapColor_RGB(82, 80, 59), /* button border */
+	BitmapColor_RGB(106, 100, 72), /* button highlight */
+	BitmapColor_RGB(82, 80, 59),  /* button */
+	BitmapColor_RGB(90, 87, 6), /* active button */
 };
 
 CC_NOINLINE static void ParseColor(const char* key, BitmapCol* color) {
 	cc_uint8 rgb[3];
-	cc_string value;
-	if (!Options_UNSAFE_Get(key, &value))    return;
-	if (!PackedCol_TryParseHex(&value, rgb)) return;
+	if (!Options_GetColor(key, rgb)) return;
 
 	*color = BitmapColor_RGB(rgb[0], rgb[1], rgb[2]);
 }
@@ -519,12 +519,13 @@ void Launcher_DrawBackgroundAll(struct Context2D* ctx) {
 cc_bool Launcher_BitmappedText(void) {
 	return (useBitmappedFont || Launcher_Theme.ClassicBackground) && hasBitmappedFont;
 }
+
 void Launcher_DrawTitle(struct FontDesc* font, const char* text, struct Context2D* ctx) {
-	cc_string title = String_FromReadonly("&6A&eu&fr&6u&em &fS&6t&ee&fl&6l&ea&fe &6C&eo&fr&6e");
+	cc_string title = String_FromReadonly(text);
 	struct DrawTextArgs args;
 	int x;
 
-	// Skip dragging logo when very small window to save space
+	/* Skip dragging logo when very small window to save space */
 	if (WindowInfo.Height < 300) return;
 
 	DrawTextArgs_Make(&args, &title, font, false);
@@ -535,6 +536,7 @@ void Launcher_DrawTitle(struct FontDesc* font, const char* text, struct Context2
 	Drawer2D.Colors['f'] = BITMAPCOLOR_WHITE;
 	Context2D_DrawText(ctx, &args, x, 0);
 }
+
 void Launcher_MakeTitleFont(struct FontDesc* font) {
 	Drawer2D.BitmappedText = Launcher_BitmappedText();
 	Font_Make(font, 32, FONT_FLAGS_NONE);

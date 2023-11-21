@@ -244,6 +244,10 @@ cc_bool Game_ValidateBitmap(const cc_string* file, struct Bitmap* bmp) {
 		return false;
 	}
 
+	return Game_ValidateBitmapPow2(file, bmp);
+}
+
+cc_bool Game_ValidateBitmapPow2(const cc_string* file, struct Bitmap* bmp) {
 	if (!Math_IsPowOf2(bmp->width) || !Math_IsPowOf2(bmp->height)) {
 		Chat_Add1("&cUnable to use %s from the texture pack.", file);
 
@@ -459,7 +463,7 @@ static void Game_Render3D(double delta, float t) {
 
 	AxisLinesRenderer_Render();
 	Entities_RenderModels(delta, t);
-	Entities_RenderNames();
+	EntityNames_Render();
 
 	Particles_Render(t);
 	Camera.Active->GetPickedBlock(&Game_SelectedPos); /* TODO: only pick when necessary */
@@ -492,7 +496,7 @@ static void Game_Render3D(double delta, float t) {
 	}
 
 	Selections_Render();
-	Entities_RenderHoveredNames();
+	EntityNames_RenderHovered();
 	Camera_KeyLookUpdate();
 	InputHandler_Tick();
 	if (!Game_HideGui) HeldBlockRenderer_Render(delta);
@@ -569,6 +573,7 @@ static void Game_RenderFrame(double delta) {
 			Gfx_RecreateContext();
 			/* all good, context is back */
 		} else {
+			Game.Time += delta; /* TODO: Not set in two places? */
 			Server.Tick(NULL);
 			Thread_Sleep(16);
 			return;

@@ -136,7 +136,7 @@ static void ReorderPixels(CCTexture* tex, struct Bitmap* bmp,
 	}
 }
 
-GfxResourceID Gfx_CreateTexture(struct Bitmap* bmp, cc_uint8 flags, cc_bool mipmaps) {
+static GfxResourceID Gfx_AllocTexture(struct Bitmap* bmp, cc_uint8 flags, cc_bool mipmaps) {
 	if (bmp->width < 4 || bmp->height < 4) {
 		Platform_LogConst("ERROR: Tried to create texture smaller than 4x4");
 		return 0;
@@ -293,10 +293,8 @@ void Gfx_DeleteIb(GfxResourceID* ib) { }
 static cc_uint8* gfx_vertices;
 static int vb_size;
 
-GfxResourceID Gfx_CreateVb(VertexFormat fmt, int count) {
-	void* data = memalign(16, count * strideSizes[fmt]);
-	if (!data) Logger_Abort("Failed to allocate memory for GFX VB");
-	return data;
+static GfxResourceID Gfx_AllocStaticVb(VertexFormat fmt, int count) {
+	return memalign(16, count * strideSizes[fmt]);
 }
 
 void Gfx_BindVb(GfxResourceID vb) { gfx_vertices = vb; }
@@ -318,11 +316,11 @@ void Gfx_UnlockVb(GfxResourceID vb) {
 }
 
 
-GfxResourceID Gfx_CreateDynamicVb(VertexFormat fmt, int maxVertices) {
-	void* data = memalign(16, maxVertices * strideSizes[fmt]);
-	if (!data) Logger_Abort("Failed to allocate memory for GFX VB");
-	return data;
+static GfxResourceID Gfx_AllocDynamicVb(VertexFormat fmt, int maxVertices) {
+	return memalign(16, maxVertices * strideSizes[fmt]);
 }
+
+void Gfx_BindDynamicVb(GfxResourceID vb) { Gfx_BindVb(vb); }
 
 void* Gfx_LockDynamicVb(GfxResourceID vb, VertexFormat fmt, int count) {
 	vb_size = count * strideSizes[fmt];
@@ -334,13 +332,7 @@ void Gfx_UnlockDynamicVb(GfxResourceID vb) {
 	DCFlushRange(vb, vb_size);
 }
 
-// Current size of vertices
-static int gfx_stride; // TODO move down to Drawing area ??
-void Gfx_SetDynamicVbData(GfxResourceID vb, void* vertices, int vCount) {
-	gfx_vertices = vb;
-	Mem_Copy(vb, vertices, vCount * gfx_stride);
-	DCFlushRange(vertices, vCount * gfx_stride);
-}
+void Gfx_DeleteDynamicVb(GfxResourceID* vb) { Gfx_DeleteVb(vb); }
 
 
 /*########################################################################################################################*
@@ -476,9 +468,6 @@ void Gfx_DisableTextureOffset(void) {
 /*########################################################################################################################*
 *---------------------------------------------------------Drawing---------------------------------------------------------*
 *#########################################################################################################################*/
-// Current format and size of vertices
-static int gfx_format = -1;
-
 void Gfx_SetVertexFormat(VertexFormat fmt) {
 	if (fmt == gfx_format) return;
 	gfx_format = fmt;

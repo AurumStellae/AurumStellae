@@ -113,10 +113,11 @@ static const struct LWidgetVTABLE lbutton_VTABLE = {
 	LButton_Hover,    LButton_Unhover,   /* Hover  */
 	LButton_OnSelect, LButton_OnUnselect /* Select */
 };
-void LButton_Init(void* screen, struct LButton* w, int width, int height, const char* text, 
-					const struct LLayout* layouts) {
+void LButton_Add(void* screen, struct LButton* w, int width, int height, const char* text, 
+					LWidgetFunc onClick, const struct LLayout* layouts) {
 	w->VTABLE  = &lbutton_VTABLE;
 	w->type    = LWIDGET_BUTTON;
+	w->OnClick = onClick;
 	w->layouts = layouts;
 	w->autoSelectable = true;
 
@@ -124,7 +125,17 @@ void LButton_Init(void* screen, struct LButton* w, int width, int height, const 
 	LButton_SetConst(w, text);
 	LScreen_AddWidget(screen, w);
 }
+void LButton_Init(void* screen, struct LButton* w, int width, int height, const char* text,
+	const struct LLayout* layouts) {
+	w->VTABLE = &lbutton_VTABLE;
+	w->type = LWIDGET_BUTTON;
+	w->layouts = layouts;
+	w->autoSelectable = true;
 
+	LBackend_ButtonInit(w, width, height);
+	LButton_SetConst(w, text);
+	LScreen_AddWidget(screen, w);
+}
 void LButton_SetConst(struct LButton* w, const char* text) {
 	w->text = String_FromReadonly(text);
 	LBackend_ButtonUpdate(w);
@@ -145,12 +156,13 @@ static const struct LWidgetVTABLE lcheckbox_VTABLE = {
 	NULL, NULL, /* Hover  */
 	NULL, NULL  /* Select */
 };
-void LCheckbox_Init(void* screen, struct LCheckbox* w, const char* text, 
-					const struct LLayout* layouts) {
+void LCheckbox_Add(void* screen, struct LCheckbox* w, const char* text, 
+					LCheckboxChanged onChanged, const struct LLayout* layouts) {
 	w->VTABLE  = &lcheckbox_VTABLE;
 	w->type    = LWIDGET_CHECKBOX;
 	w->layouts = layouts;
 	w->autoSelectable = true;
+	w->ValueChanged   = onChanged;
 
 	w->text = String_FromReadonly(text);
 	LBackend_CheckboxInit(w);
@@ -319,14 +331,17 @@ static const struct LWidgetVTABLE linput_VTABLE = {
 	LInput_Select, LInput_Unselect, /* Select */
 	NULL, LInput_TextChanged        /* TextChanged */
 };
-void LInput_Init(void* screen, struct LInput* w, int width, const char* hintText, 
+void LInput_Add(void* screen, struct LInput* w, int width, const char* hintText, 
 				const struct LLayout* layouts) {
 	w->VTABLE  = &linput_VTABLE;
 	w->type    = LWIDGET_INPUT;
 	w->autoSelectable = true;
 	w->opaque  = true;
 	w->layouts = layouts;
-	String_InitArray(w->text, w->_textBuffer);
+
+	if (!w->text.buffer) {
+		String_InitArray(w->text, w->_textBuffer);
+	}
 	
 	w->hintText = hintText;
 	w->caretPos = -1;
@@ -376,7 +391,7 @@ static const struct LWidgetVTABLE llabel_VTABLE = {
 	NULL, NULL, /* Hover  */
 	NULL, NULL  /* Select */
 };
-void LLabel_Init(void* screen, struct LLabel* w, const char* text, 
+void LLabel_Add(void* screen, struct LLabel* w, const char* text, 
 				const struct LLayout* layouts) {
 	w->VTABLE  = &llabel_VTABLE;
 	w->type    = LWIDGET_LABEL;
@@ -414,7 +429,7 @@ static const struct LWidgetVTABLE lline_VTABLE = {
 	NULL, NULL, /* Hover  */
 	NULL, NULL  /* Select */
 };
-void LLine_Init(void* screen, struct LLine* w, int width, 
+void LLine_Add(void* screen, struct LLine* w, int width, 
 				const struct LLayout* layouts) {
 	w->VTABLE  = &lline_VTABLE;
 	w->type    = LWIDGET_LINE;
@@ -444,7 +459,7 @@ static const struct LWidgetVTABLE lslider_VTABLE = {
 	NULL, NULL, /* Hover  */
 	NULL, NULL  /* Select */
 };
-void LSlider_Init(void* screen, struct LSlider* w, int width, int height, BitmapCol color, 
+void LSlider_Add(void* screen, struct LSlider* w, int width, int height, BitmapCol color, 
 				const struct LLayout* layouts) {
 	w->VTABLE  = &lslider_VTABLE;
 	w->type    = LWIDGET_SLIDER;
@@ -505,10 +520,10 @@ static int SoftwareColumn_Sort(const struct ServerInfo* a, const struct ServerIn
 
 static struct LTableColumn tableColumns[] = {
 	{ "",          15, FlagColumn_Draw,     NULL,                false, false, false },
-	{ "Name",     328, NameColumn_Draw,     NameColumn_Sort,     true,  false, true  },
-	{ "Players",   73, PlayersColumn_Draw,  PlayersColumn_Sort,  true,  true,  true  },
-	{ "Uptime",    73, UptimeColumn_Draw,   UptimeColumn_Sort,   true,  true,  true  },
-	{ "Software", 143, SoftwareColumn_Draw, SoftwareColumn_Sort, false, true,  true  }
+	{ "&6N&ea&fm&6e",     328, NameColumn_Draw,     NameColumn_Sort,     true,  false, true  },
+	{ "&6P&el&fa&6y&ee&fr&6s",   73, PlayersColumn_Draw,  PlayersColumn_Sort,  true,  true,  true  },
+	{ "&6U&ep&ft&6i&em&fe",    73, UptimeColumn_Draw,   UptimeColumn_Sort,   true,  true,  true  },
+	{ "&6S&eo&ff&6t&ew&fa&6r&ee&f", 143, SoftwareColumn_Draw, SoftwareColumn_Sort, false, true,  true  }
 };
 
 
@@ -636,7 +651,7 @@ static const struct LWidgetVTABLE ltable_VTABLE = {
 	LTable_MouseDown, LTable_MouseUp, /* Select */
 	LTable_MouseWheel,      /* Wheel */
 };
-void LTable_Init(void* screen, struct LTable* w, 
+void LTable_Add(void* screen, struct LTable* w, 
 				const struct LLayout* layouts) {
 	int i;
 	w->VTABLE     = &ltable_VTABLE;
