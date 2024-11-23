@@ -6,22 +6,22 @@ Copyright 2014-2023 ClassiCube | Licensed under BSD-3
 */
 
 #define GAME_MAX_CMDARGS 5
-#define CC_APP_VER "1.3.6"
-#define STELLA_APP_VER "0.6"
+#define CC_APP_VER "1.3.7"
+#define STELLA_APP_VER "0.7"
 #define GAME_API_VER 1
 
 #if defined CC_BUILD_WEB
-#define GAME_APP_ALT   "ClassiCube 1.3.6 web mobile"
-#define GAME_APP_NAME  "ClassiCube 1.3.6 web"
+#define GAME_APP_ALT   "ClassiCube 1.3.7 web mobile"
+#define GAME_APP_NAME  "ClassiCube 1.3.7 web"
 #define GAME_APP_TITLE "ClassiCube"
 #else
 #if defined CC_BUILD_OG
-#define GAME_APP_NAME  "ClassiCube 1.3.6"
-#define GAME_APP_TITLE "ClassiCube 1.3.6"
+#define GAME_APP_NAME  "ClassiCube 1.3.7"
+#define GAME_APP_TITLE "ClassiCube 1.3.7"
 #else
-#define CC_APP_NAME  "ClassiCube 1.3.6"
-#define GAME_APP_NAME "&eAurum &6Stellae &fCore &e0&6.&f6&e"
-#define GAME_APP_TITLE "Aurum Stellae Core 0.6"
+#define CC_APP_NAME  "ClassiCube 1.3.7"
+#define GAME_APP_NAME "&eAurum &6Stellae &fCore &e0&6.&f7&e"
+#define GAME_APP_TITLE "Aurum Stellae Core 0.7"
 #endif
 #endif
 

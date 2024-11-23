@@ -112,9 +112,6 @@
     <Filter Include="Header Files\Audio">
       <UniqueIdentifier>{b6f24d6b-c6f6-4909-9ae1-f0c478846c6e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Freetype">
-      <UniqueIdentifier>{bff86df8-7005-42a8-80c1-5468c1196336}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Launcher">
       <UniqueIdentifier>{6b1102a4-29d5-4c01-8f32-b9d9cb19b8aa}</UniqueIdentifier>
     </Filter>
@@ -126,6 +123,9 @@
     </Filter>
     <Filter Include="Source Files\Window">
       <UniqueIdentifier>{cd88d7cb-c252-4b8f-8f90-c776cfc1e6b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Freetype">
+      <UniqueIdentifier>{bff86df8-7005-42a8-80c1-5468c1196336}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -474,46 +474,46 @@
       <Filter>Source Files\Blocks</Filter>
     </ClCompile>
     <ClCompile Include="_autofit.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_cff.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_ftbase.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_ftbitmap.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_ftglyph.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_ftinit.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_ftsynth.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_psaux.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_pshinter.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_psmodule.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_sfnt.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_smooth.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_type1.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="_truetype.c">
-      <Filter>Source Files\Freetype</Filter>
+      <Filter>Source Files\Game\Freetype</Filter>
     </ClCompile>
     <ClCompile Include="Launcher.c">
       <Filter>Source Files\Launcher</Filter>
